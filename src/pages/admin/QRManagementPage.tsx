@@ -8,6 +8,7 @@ import { PageSpinner } from '../../components/ui/Spinner';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { QREditModal } from '../../components/qr/QREditModal';
 import { QRDeleteDialog } from '../../components/qr/QRDeleteDialog';
+import { QRPreviewModal } from '../../components/qr/QRPreviewModal';
 import {
   Eye, Pencil, Trash2, Download, ToggleLeft, ToggleRight, Search, Filter,
 } from 'lucide-react';
@@ -35,6 +36,7 @@ export function QRManagementPage() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<'all' | 'active' | 'disabled'>('all');
+  const [previewCard, setPreviewCard] = useState<QRCard | null>(null);
   const [editCard, setEditCard] = useState<QRCard | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleteName, setDeleteName] = useState('');
@@ -131,17 +133,23 @@ export function QRManagementPage() {
                 {cards.map((card) => (
                   <tr key={card.id} className="hover:bg-zinc-800/30 transition-colors">
                     <td className="px-5 py-4">
-                      {card.qr_image_base64 ? (
-                        <img
-                          src={card.qr_image_base64}
-                          alt="QR"
-                          className="w-10 h-10 rounded-lg bg-white p-0.5"
-                        />
-                      ) : (
-                        <div className="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center">
-                          <span className="text-xs text-zinc-500">—</span>
-                        </div>
-                      )}
+                      <button
+                        onClick={() => setPreviewCard(card)}
+                        className="group relative"
+                        title="Click to preview QR"
+                      >
+                        {card.qr_image_base64 ? (
+                          <img
+                            src={card.qr_image_base64}
+                            alt="QR"
+                            className="w-10 h-10 rounded-lg bg-white p-0.5 group-hover:ring-2 group-hover:ring-emerald-500/50 transition-all"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 rounded-lg bg-zinc-800 flex items-center justify-center">
+                            <span className="text-xs text-zinc-500">—</span>
+                          </div>
+                        )}
+                      </button>
                     </td>
                     <td className="px-5 py-4">
                       <p className="font-medium text-zinc-100">{card.business_name}</p>
@@ -211,7 +219,9 @@ export function QRManagementPage() {
               <div key={card.id} className="p-4">
                 <div className="flex items-start gap-3 mb-3">
                   {card.qr_image_base64 && (
-                    <img src={card.qr_image_base64} alt="QR" className="w-12 h-12 rounded-lg bg-white p-0.5 flex-shrink-0" />
+                    <button onClick={() => setPreviewCard(card)} className="flex-shrink-0">
+                      <img src={card.qr_image_base64} alt="QR" className="w-12 h-12 rounded-lg bg-white p-0.5 hover:ring-2 hover:ring-emerald-500/50 transition-all" />
+                    </button>
                   )}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
@@ -246,6 +256,7 @@ export function QRManagementPage() {
         </div>
       )}
 
+      <QRPreviewModal card={previewCard} onClose={() => setPreviewCard(null)} />
       <QREditModal card={editCard} onClose={() => setEditCard(null)} />
       <QRDeleteDialog id={deleteId} businessName={deleteName} onClose={() => setDeleteId(null)} />
     </div>
