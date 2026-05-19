@@ -21,7 +21,7 @@ export const qrApi = {
     api.put<ApiResponse<QRCard>>(`/qr/${id}`, data).then((r) => r.data),
 
   toggleStatus: (id: string) =>
-    api.patch<ApiResponse<QRCard>>(`/qr/${id}/status`).then((r) => r.data),
+    api.put<ApiResponse<QRCard>>(`/qr/${id}/status`).then((r) => r.data),
 
   remove: (id: string) =>
     api.delete<ApiResponse<void>>(`/qr/${id}`).then((r) => r.data),
